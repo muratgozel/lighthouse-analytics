@@ -23,6 +23,11 @@ const {LighthouseAnalytics} = require('lighthouse-analytics')
 or via script tag:
 
 ```html
+<script src="https://unpkg.com/local-storage-pro@1/dist/local-storage-pro.iife.js" crossorigin type="text/javascript"></script>
+<script src="https://unpkg.com/state-manager-object@1/dist/state-manager-object.iife.js" crossorigin type="text/javascript"></script>
+<script src="https://unpkg.com/basekits@1/dist/basekits.iife.js" crossorigin type="text/javascript"></script>
+<script src="https://unpkg.com/event-emitter-object@1/dist/event-emitter-object.iife.js" crossorigin type="text/javascript"></script>
+
 <script src="https://unpkg.com/basekits@1/dist/lighthouse-analytics.iife.js" crossorigin type="text/javascript"></script>
 ```
 
