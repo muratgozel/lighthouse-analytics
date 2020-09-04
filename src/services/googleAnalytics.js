@@ -1,4 +1,4 @@
-import {typekit, errorkit, objectkit, validationkit} from 'basekits'
+import {typekit, objectkit, validationkit} from 'basekits'
 import scripter from 'dom-scripter'
 
 function LAGoogleAnalytics(opts = {}) {

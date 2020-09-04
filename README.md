@@ -17,7 +17,7 @@ npm install lighthouse-analytics
 There are different types of distributions depending on your use case. Essentially, the package can be imported via require:
 
 ```js
-const {Lighthouse} = require('lighthouse-analytics')
+const {LighthouseAnalytics} = require('lighthouse-analytics')
 ```
 
 or via script tag:
@@ -31,8 +31,8 @@ but there are lots of other options. See distribution report below.
 ## Use
 Initiate the client:
 ```js
-const {Lighthouse, LAGoogleAnalytics} = require('lighthouse-analytics')
-const lighthouse = new Lighthouse()
+const {LighthouseAnalytics, LAGoogleAnalytics} = require('lighthouse-analytics')
+const lighthouse = new LighthouseAnalytics()
 ```
 
 ### Context
@@ -190,16 +190,16 @@ This is an auto-generated report that shows the type, name and size of the bundl
 [comment]: # (DISTRIBUTIONS_REPORT_START)
 ```js
 [
-  "lighthouse-analytics.amd.js (33.27 KB)",
-  "lighthouse-analytics.amd.polyfilled.js (59.49 KB)",
-  "lighthouse-analytics.cjs.js (33.25 KB)",
-  "lighthouse-analytics.cjs.polyfilled.js (59.51 KB)",
-  "lighthouse-analytics.es.js (33.18 KB)",
-  "lighthouse-analytics.es.polyfilled.js (59.44 KB)",
-  "lighthouse-analytics.iife.js (33.23 KB)",
-  "lighthouse-analytics.iife.polyfilled.js (59.46 KB)",
-  "lighthouse-analytics.umd.js (33.49 KB)",
-  "lighthouse-analytics.umd.polyfilled.js (59.70 KB)"
+  "lighthouse-analytics.amd.js (9.74 KB)",
+  "lighthouse-analytics.amd.polyfilled.js (36.07 KB)",
+  "lighthouse-analytics.cjs.js (9.76 KB)",
+  "lighthouse-analytics.cjs.polyfilled.js (36.13 KB)",
+  "lighthouse-analytics.es.js (9.39 KB)",
+  "lighthouse-analytics.es.polyfilled.js (35.76 KB)",
+  "lighthouse-analytics.iife.js (9.69 KB)",
+  "lighthouse-analytics.iife.polyfilled.js (36.02 KB)",
+  "lighthouse-analytics.umd.js (10.14 KB)",
+  "lighthouse-analytics.umd.polyfilled.js (36.47 KB)"
 ]
 ```
 [comment]: # (DISTRIBUTIONS_REPORT_END)

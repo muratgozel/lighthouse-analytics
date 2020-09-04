@@ -6,6 +6,9 @@ const {terser} = require('rollup-plugin-terser')
 const suffix = process.env.USE_POLYFILLS == 'on' ? '.polyfilled' : ''
 
 module.exports = {
+  external: [
+    'basekits', 'event-emitter-object', 'local-storage-pro', 'visibility-state-listener'
+  ],
   input: 'src/index.js',
   output: [
     {
@@ -24,11 +27,23 @@ module.exports = {
       format: 'iife',
       file: 'dist/lighthouse-analytics.iife' + suffix + '.js',
       name: 'LighthouseAnalytics',
+      globals: {
+        'basekits': 'Basekits',
+        'event-emitter-object': 'EventEmitterObject',
+        'local-storage-pro': 'LocalStoragePro',
+        'visibility-state-listener': 'VisibilityStateListener'
+      }
     },
     {
       format: 'umd',
       file: 'dist/lighthouse-analytics.umd' + suffix + '.js',
       name: 'LighthouseAnalytics',
+      globals: {
+        'basekits': 'Basekits',
+        'event-emitter-object': 'EventEmitterObject',
+        'local-storage-pro': 'LocalStoragePro',
+        'visibility-state-listener': 'VisibilityStateListener'
+      }
     }
   ],
   plugins: [

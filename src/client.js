@@ -2,9 +2,9 @@ import EventEmitter from 'event-emitter-object'
 import localStore from 'local-storage-pro'
 import { nanoid as nanoidunsecure } from 'nanoid/non-secure'
 import createVisibilityStateListener from 'visibility-state-listener'
-import {typekit, errorkit, objectkit, validationkit} from 'basekits'
+import {typekit, objectkit, validationkit} from 'basekits'
 
-function Lighthouse(opts = {}) {
+function LighthouseAnalytics(opts = {}) {
   EventEmitter.call(this, {})
 
   this.window = opts.window || (typeof window == 'undefined' ? undefined : window)
@@ -37,10 +37,10 @@ function Lighthouse(opts = {}) {
   this.services = []
 }
 
-Lighthouse.prototype = Object.create(EventEmitter.prototype)
-Lighthouse.prototype.constructor = Lighthouse
+LighthouseAnalytics.prototype = Object.create(EventEmitter.prototype)
+LighthouseAnalytics.prototype.constructor = Lighthouse
 
-Lighthouse.prototype.identify = function identify() {
+LighthouseAnalytics.prototype.identify = function identify() {
   // check browser identifier
   const existingID = localStore.getItem(this.storageKeys.id)
   if (existingID) {
@@ -75,7 +75,7 @@ Lighthouse.prototype.identify = function identify() {
   }
 }
 
-Lighthouse.prototype.listenVisibilityChanges = function listenVisibilityChanges() {
+LighthouseAnalytics.prototype.listenVisibilityChanges = function listenVisibilityChanges() {
   const self = this
   const listener = createVisibilityStateListener({
     window: this.window,
@@ -94,21 +94,21 @@ Lighthouse.prototype.listenVisibilityChanges = function listenVisibilityChanges(
   })
 }
 
-Lighthouse.prototype.getVisibilityState = function getVisibilityState() {
+LighthouseAnalytics.prototype.getVisibilityState = function getVisibilityState() {
   return this.visibilityState
 }
 
-Lighthouse.prototype.setContext = function setContext(obj) {
+LighthouseAnalytics.prototype.setContext = function setContext(obj) {
   if (typekit.isObject(obj)) this.context = obj
   return this
 }
 
-Lighthouse.prototype.updateContext = function updateContext(obj) {
+LighthouseAnalytics.prototype.updateContext = function updateContext(obj) {
   if (typekit.isObject(obj)) this.context = Object.assign({}, this.context, obj)
   return this
 }
 
-Lighthouse.prototype.install = function install() {
+LighthouseAnalytics.prototype.install = function install() {
   function installService(Service) {
     return Service.install ? Service.install(this) : Promise.resolve()
   }
@@ -116,19 +116,19 @@ Lighthouse.prototype.install = function install() {
   return Promise.all( this.services.map( installService.bind(this) ) )
 }
 
-Lighthouse.prototype.addService = function addService(obj) {
+LighthouseAnalytics.prototype.addService = function addService(obj) {
   this.services.push(obj)
   return this
 }
 
-Lighthouse.prototype.startTimer = function startTimer() {
+LighthouseAnalytics.prototype.startTimer = function startTimer() {
   this.timer = setInterval(function() {
     this.emit('online')
     this.event('online', {})
   }.bind(this), 15000)
 }
 
-Lighthouse.prototype.clearTimer = function clearTimer() {
+LighthouseAnalytics.prototype.clearTimer = function clearTimer() {
   if (validationkit.isNotEmpty(this.timer)) {
     clearInterval(this.timer)
     this.timer = null
@@ -136,22 +136,22 @@ Lighthouse.prototype.clearTimer = function clearTimer() {
   return this
 }
 
-Lighthouse.prototype.isFirstVisit = function isFirstVisit() {
+LighthouseAnalytics.prototype.isFirstVisit = function isFirstVisit() {
   return this.context.firstVisit
 }
 
-Lighthouse.prototype.event = function event(name, params) {
+LighthouseAnalytics.prototype.event = function event(name, params) {
   this.addToQueue({name: name, params: params})
   return this
 }
 
-Lighthouse.prototype.addToQueue = function addToQueue(obj) {
+LighthouseAnalytics.prototype.addToQueue = function addToQueue(obj) {
   this.queue.push(obj)
   this.processQueue()
   return true
 }
 
-Lighthouse.prototype.processQueue = function processQueue() {
+LighthouseAnalytics.prototype.processQueue = function processQueue() {
   if (this.isBusy === true) return undefined
 
   this.isBusy = true
@@ -163,7 +163,7 @@ Lighthouse.prototype.processQueue = function processQueue() {
   return true
 }
 
-Lighthouse.prototype.processEvent = function processEvent(name, params) {
+LighthouseAnalytics.prototype.processEvent = function processEvent(name, params) {
   // validate
   const evName = typekit.isString(name) && typekit.isNotEmpty(name) ? name : undefined
   const evParams = typekit.isObject(params)
@@ -203,7 +203,7 @@ Lighthouse.prototype.processEvent = function processEvent(name, params) {
   return;
 }
 
-Lighthouse.prototype.getEvent = function getEvent(name) {
+LighthouseAnalytics.prototype.getEvent = function getEvent(name) {
   const len = this.memory.events.length
   if (len < 1) return undefined
   for (let i = len - 1; i >= 0; i--) {
@@ -214,18 +214,18 @@ Lighthouse.prototype.getEvent = function getEvent(name) {
   return undefined
 }
 
-Lighthouse.prototype.getLastEvent = function getLastEvent() {
+LighthouseAnalytics.prototype.getLastEvent = function getLastEvent() {
   const len = this.memory.events.length
   return len > 0 ? this.memory.events[len - 1] : undefined
 }
 
-Lighthouse.prototype.getTimestamp = function getTimestamp() {
+LighthouseAnalytics.prototype.getTimestamp = function getTimestamp() {
   return Date.now()
 }
 
-Lighthouse.prototype.getTimeDiff = function getTimeDiff(d1, d2, precision = 'seconds') {
+LighthouseAnalytics.prototype.getTimeDiff = function getTimeDiff(d1, d2, precision = 'seconds') {
   const num = precision == 'seconds' ? 1000 : 1
   return Math.floor((d1 - d2) / num)
 }
 
-export default Lighthouse
+export default LighthouseAnalytics
