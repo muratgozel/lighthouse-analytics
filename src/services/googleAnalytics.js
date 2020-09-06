@@ -86,7 +86,7 @@ LAGoogleAnalytics.prototype.install = function install(client) {
     scripter
       .inject(self.scriptURL, {
         id: self.scriptTagID,
-        location: 'afterScript'
+        location: 'bodyEnd'
       })
       .then(function() {
         self.ready = true
@@ -108,7 +108,7 @@ LAGoogleAnalytics.prototype.event = function event(evName, evParams = {}) {
   if (localEventName == 'screen_view') {
     const pageLoadParams = this.generatePageLoadParams(evParams)
     if (typekit.isObject(pageLoadParams)) {
-      self.client.window.gtag('config', this.id, pageLoadParams)
+      this.client.window.gtag('config', this.id, pageLoadParams)
     }
   }
 
@@ -130,7 +130,7 @@ LAGoogleAnalytics.prototype.event = function event(evName, evParams = {}) {
     }
   }
 
-  self.client.window.gtag('event', localEventName, params)
+  this.client.window.gtag('event', localEventName, params)
 }
 
 LAGoogleAnalytics.prototype.findLocalEventName = function findLocalEventName(evName, evParams) {

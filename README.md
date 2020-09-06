@@ -196,15 +196,15 @@ This is an auto-generated report that shows the type, name and size of the bundl
 ```js
 [
   "lighthouse-analytics.amd.js (9.71 KB)",
-  "lighthouse-analytics.amd.polyfilled.js (36.05 KB)",
+  "lighthouse-analytics.amd.polyfilled.js (36.04 KB)",
   "lighthouse-analytics.cjs.js (9.73 KB)",
   "lighthouse-analytics.cjs.polyfilled.js (36.10 KB)",
-  "lighthouse-analytics.es.js (9.37 KB)",
+  "lighthouse-analytics.es.js (9.36 KB)",
   "lighthouse-analytics.es.polyfilled.js (35.73 KB)",
   "lighthouse-analytics.iife.js (9.66 KB)",
-  "lighthouse-analytics.iife.polyfilled.js (36.00 KB)",
+  "lighthouse-analytics.iife.polyfilled.js (35.99 KB)",
   "lighthouse-analytics.umd.js (10.11 KB)",
-  "lighthouse-analytics.umd.polyfilled.js (36.45 KB)"
+  "lighthouse-analytics.umd.polyfilled.js (36.44 KB)"
 ]
 ```
 [comment]: # (DISTRIBUTIONS_REPORT_END)

@@ -109,11 +109,12 @@ LighthouseAnalytics.prototype.updateContext = function updateContext(obj) {
 }
 
 LighthouseAnalytics.prototype.install = function install() {
-  function installService(Service) {
-    return Service.install ? Service.install(this) : Promise.resolve()
-  }
-
-  return Promise.all( this.services.map( installService.bind(this) ) )
+  return Promise
+    .all(
+      this.services.map(
+        obj => obj.install ? obj.install(this) : Promise.resolve()
+      )
+    )
 }
 
 LighthouseAnalytics.prototype.addService = function addService(obj) {
