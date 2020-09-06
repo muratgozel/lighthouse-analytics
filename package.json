@@ -1,6 +1,6 @@
 {
   "name": "lighthouse-analytics",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Extensible, lightweight, cookieless and privacy focused analytics library for javascript apps.",
   "main": "dist/lighthouse-analytics.cjs.js",
   "scripts": {
@@ -55,7 +55,7 @@
     "jsdom": "^16.4.0",
     "rollup": "^2.26.10",
     "rollup-plugin-babel": "^4.4.0",
-    "rollup-plugin-terser": "^7.0.1",
+    "rollup-plugin-terser": "^7.0.2",
     "semver": "^7.3.2",
     "yargs": "^15.4.1"
   }

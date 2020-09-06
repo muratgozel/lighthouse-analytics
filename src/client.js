@@ -38,7 +38,7 @@ function LighthouseAnalytics(opts = {}) {
 }
 
 LighthouseAnalytics.prototype = Object.create(EventEmitter.prototype)
-LighthouseAnalytics.prototype.constructor = Lighthouse
+LighthouseAnalytics.prototype.constructor = LighthouseAnalytics
 
 LighthouseAnalytics.prototype.identify = function identify() {
   // check browser identifier
