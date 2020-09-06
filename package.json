@@ -1,6 +1,6 @@
 {
   "name": "lighthouse-analytics",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Extensible, lightweight, cookieless and privacy focused analytics library for javascript apps.",
   "main": "dist/lighthouse-analytics.cjs.js",
   "scripts": {
