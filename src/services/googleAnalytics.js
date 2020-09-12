@@ -86,7 +86,7 @@ LAGoogleAnalytics.prototype.install = function install(client) {
     scripter
       .inject(self.scriptURL, {
         id: self.scriptTagID,
-        location: 'bodyEnd'
+        location: 'headEnd'
       })
       .then(function() {
         self.ready = true
