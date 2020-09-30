@@ -28,10 +28,14 @@ function LighthouseAnalytics(opts = {}) {
 
   // track switches to another window/tab
   this.visibilityState = 'visible'
-  this.listenVisibilityChanges()
+  if (validationkit.isNotEmpty(opts.listenVisibilityChanges)) {
+    this.listenVisibilityChanges()
+  }
 
   this.timer = null
-  this.startTimer()
+  if (validationkit.isNotEmpty(opts.checkOnlineTime)) {
+    this.startTimer()
+  }
 
   this.queue = []
   this.services = []

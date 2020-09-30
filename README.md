@@ -38,6 +38,12 @@ Initiate the client:
 ```js
 const {LighthouseAnalytics, LAGoogleAnalytics} = require('lighthouse-analytics')
 const lighthouse = new LighthouseAnalytics()
+
+// init options (default)
+const lighthouse = new LighthouseAnalytics({
+  listenVisibilityChanges: false,
+  checkOnlineTime: false
+})
 ```
 
 ### Context
@@ -158,9 +164,11 @@ meter.start( document.getElementById('sample1'), 'en' )
 ### Internal Events
 Lighthouse has its own [event-emitter](https://github.com/muratgozel/event-emitter-object) integrated and emits the following internal events for the developer:
 ```js
+// if listenVisibilityChanges option set to true
 lighthouse.on('visibilityChange', function(visibilityState) {
   // visibilityState is "visible" or "hidden"
 })
+// if checkOnlineTime option set to true
 lighthouse.on('online', function() {
   // trigged every 30 seconds independent from the visibility state.
 })
@@ -195,16 +203,16 @@ This is an auto-generated report that shows the type, name and size of the bundl
 [comment]: # (DISTRIBUTIONS_REPORT_START)
 ```js
 [
-  "lighthouse-analytics.amd.js (9.71 KB)",
-  "lighthouse-analytics.amd.polyfilled.js (36.04 KB)",
-  "lighthouse-analytics.cjs.js (9.73 KB)",
-  "lighthouse-analytics.cjs.polyfilled.js (36.10 KB)",
-  "lighthouse-analytics.es.js (9.36 KB)",
-  "lighthouse-analytics.es.polyfilled.js (35.73 KB)",
-  "lighthouse-analytics.iife.js (9.66 KB)",
-  "lighthouse-analytics.iife.polyfilled.js (35.99 KB)",
-  "lighthouse-analytics.umd.js (10.11 KB)",
-  "lighthouse-analytics.umd.polyfilled.js (36.44 KB)"
+  "lighthouse-analytics.amd.js (9.81 KB)",
+  "lighthouse-analytics.amd.polyfilled.js (36.14 KB)",
+  "lighthouse-analytics.cjs.js (9.83 KB)",
+  "lighthouse-analytics.cjs.polyfilled.js (36.20 KB)",
+  "lighthouse-analytics.es.js (9.44 KB)",
+  "lighthouse-analytics.es.polyfilled.js (35.80 KB)",
+  "lighthouse-analytics.iife.js (9.76 KB)",
+  "lighthouse-analytics.iife.polyfilled.js (36.09 KB)",
+  "lighthouse-analytics.umd.js (10.21 KB)",
+  "lighthouse-analytics.umd.polyfilled.js (36.54 KB)"
 ]
 ```
 [comment]: # (DISTRIBUTIONS_REPORT_END)
