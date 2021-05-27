@@ -7,7 +7,7 @@ const suffix = process.env.USE_POLYFILLS == 'on' ? '.polyfilled' : ''
 
 module.exports = {
   external: [
-    'basekits', 'event-emitter-object', 'local-storage-pro', 'visibility-state-listener'
+    'basekits', 'event-emitter-object', 'visibility-state-listener'
   ],
   input: 'src/index.js',
   output: [
@@ -30,7 +30,6 @@ module.exports = {
       globals: {
         'basekits': 'Basekits',
         'event-emitter-object': 'EventEmitterObject',
-        'local-storage-pro': 'LocalStoragePro',
         'visibility-state-listener': 'VisibilityStateListener'
       }
     },
@@ -41,7 +40,6 @@ module.exports = {
       globals: {
         'basekits': 'Basekits',
         'event-emitter-object': 'EventEmitterObject',
-        'local-storage-pro': 'LocalStoragePro',
         'visibility-state-listener': 'VisibilityStateListener'
       }
     }

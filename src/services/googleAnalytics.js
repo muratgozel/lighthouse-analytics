@@ -1,203 +1,98 @@
 import {typekit, objectkit, validationkit} from 'basekits'
-import scripter from 'dom-scripter'
+import Scripter from 'dom-scripter'
 
-function LAGoogleAnalytics(opts = {}) {
-  // google analytics property id
-  this.id = opts.id
-  // user identifier if your app has membership system
-  this.userID = opts.userID
-
-  this.initOpts = {
-    send_page_view: false
+export default function GoogleAnalytics(_opts={}) {
+  if (typekit.isEmpty(_opts.property)) {
+    throw new Error('Specify Google Analytics property.')
   }
-  if (this.userID) this.initOpts.user_id = this.userID
-  this.ready = false
-  this.client = null
-  this.scriptTagID = 'lighthouse-service-google-analytics'
-  this.scriptURL = 'https://www.googletagmanager.com/gtag/js?id=' + this.id
 
-  this.reservedEventNames = {
-    screenView: 'screen_view',
-    time: 'timing_complete',
-    error: 'exception',
-    share: 'share',
-    search: 'search',
-    login: 'login',
-    signup: 'sign_up'
-  }
-  this.parameterReference = {
-    screen_view: {
-      params: ['screen_name', 'app_name', 'app_id', 'app_version', 'app_installer_id'],
-      match: {
-        title: 'screen_name',
-        appName: 'app_name',
-        appID: 'app_id',
-        appVersion: 'app_version',
-        appInstallerID: 'app_installer_id'
-      },
-      requiredParams: ['screen_name', 'app_name']
-    },
-    timing_complete: {
-      params: ['name', 'value', 'event_category', 'event_label'],
-      match: {
-        name: 'event_category',
-        category: 'name',
-        value: 'value'
-      },
-      requiredParams: ['name', 'value']
-    },
-    exception: {
-      params: ['description', 'fatal'],
-      match: {
-        debug: 'description'
-      },
-      requiredParams: ['description']
-    },
-    share: {
-      params: ['method', 'content_id', 'content_type'],
-      match: {
-        channel: 'method',
-        id: 'content_id'
-      },
-      requiredParams: ['method']
-    },
-    search: {
-      params: ['term'],
-      match: {
-        term: 'term'
-      },
-      requiredParams: ['term']
-    }
-  }
-}
-
-LAGoogleAnalytics.prototype.install = function install(client) {
-  const self = this
-  self.client = client
-
-  self.client.window.dataLayer = self.client.window.dataLayer || []
-  self.client.window.gtag = function gtag() {
-    dataLayer.push(arguments)
-  }
-  self.client.window.gtag('js', new Date())
-  self.client.window.gtag('config', self.id, self.initOpts)
-
-  return new Promise(function(resolve, reject) {
-    scripter
-      .inject(self.scriptURL, {
-        id: self.scriptTagID,
-        location: 'headEnd'
-      })
-      .then(function() {
-        self.ready = true
-        return resolve()
-      })
-      .catch(function(err) {
-        self.client.emit('error', err)
-        return resolve()
-      })
-  })
-}
-
-LAGoogleAnalytics.prototype.event = function event(evName, evParams = {}) {
-  if (this.ready !== true) return;
-
-  const localEventName = this.findLocalEventName(evName, evParams)
-
-  // send page load event if possible
-  if (localEventName == 'screen_view') {
-    const pageLoadParams = this.generatePageLoadParams(evParams)
-    if (typekit.isObject(pageLoadParams)) {
-      this.client.window.gtag('config', this.id, pageLoadParams)
+  const scripter = Scripter.create()
+  const config = {
+    name: 'Google Analytics',
+    property: _opts.property,
+    userID: objectkit.getProp(_opts, 'userID', null),
+    localEventNames: {
+      SCREEN: 'screen_view',
+      TIMING: 'timing_complete',
+      EXCEPTION: 'exception',
+      SHARE: 'share',
+      SEARCH: 'search',
+      SIGNIN: 'login',
+      SIGNUP: 'sign_up'
     }
   }
 
-  const params = this.generateLocalParams(localEventName, evParams)
-  if (typekit.isUndefined(params)) return;
+  function init() {
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function gtag() {
+      dataLayer.push(arguments)
+    }
+    window.gtag('js', new Date())
+    window.gtag('config', config.property, {
+      send_page_view: false,
+      user_id: config.userID
+    })
 
-  // validate params
-  const hasReference = this.parameterReference.hasOwnProperty(localEventName)
-  if (hasReference) {
-    const reference = this.parameterReference[localEventName]
-    if (reference.hasOwnProperty('requiredParams')) {
-      const missing = reference.requiredParams.filter(function(param) {
-        return params.hasOwnProperty(param) !== true
-      })
-      if (missing && missing.length > 0) {
-        this.client.emit('error', [new Error('MISSING_PARAMS'), missing.join(',')])
-        return;
+    const src = 'https://www.googletagmanager.com/gtag/js?id=' + config.property
+
+    return scripter.injectjs(src, {
+      id: 'lighthouse-service-google-analytics',
+      location: 'headEnd'
+    })
+  }
+
+  function send(activity, session) {
+    const localName = objectkit.getProp(config.localEventNames, activity.name, activity.name)
+    const localParams = {}
+
+    if (activity.name == 'SCREEN') {
+      const payload = {
+        title: objectkit.getProp(activity.params, 'title', document.title),
+        page_location: objectkit.getProp(activity.params, 'url', location.href),
+        page_path: objectkit.getProp(activity.params, 'path', location.pathname)
       }
+      window.gtag('config', config.property, payload)
+
+      localParams.screen_name = objectkit.getProp(activity.params, 'title', document.title)
+      if (session.app.name) localParams['app_name'] = session.app.name
+      if (session.app.version) localParams['app_version'] = session.app.version
     }
-  }
-
-  this.client.window.gtag('event', localEventName, params)
-}
-
-LAGoogleAnalytics.prototype.findLocalEventName = function findLocalEventName(evName, evParams) {
-  if (evName == 'view' && objectkit.getProp(evParams, 'category', '') == 'screen') {
-    return this.reservedEventNames.screenView
-  }
-  return this.reservedEventNames.hasOwnProperty(evName)
-    ? this.reservedEventNames[evName]
-    : evName
-}
-
-LAGoogleAnalytics.prototype.generateLocalParams = function generateLocalParams(evName, evParams) {
-  const kit = this.client.kit
-
-  const hasReference = this.parameterReference.hasOwnProperty(evName)
-  if (!hasReference && !evParams.hasOwnProperty('value')) {
-    return undefined
-  }
-
-  if (!hasReference && evParams.hasOwnProperty('value')) {
-    return Object.assign(
-      {},
-      {
-        event_callback: function() {return;}
-      },
-      {
-        event_label: evParams.value,
-        event_category: 'engagement'
-      }
-    )
-  }
-
-  const reference = this.parameterReference[evName]
-  // get params sent directly for google analytics
-  const eventParams = typekit.isObject(evParams.googleAnalytics) ? evParams.googleAnalytics : {}
-  // try to match client's params for google analytics
-  const matchedParams = Object.keys(reference.match).reduce(function(memo, clientParam) {
-    if (evParams.hasOwnProperty(clientParam)) {
-      memo[ reference.match[clientParam] ] = evParams[clientParam]
+    else if (activity.name == 'EXCEPTION') {
+      localParams.description = activity.params.error.message
     }
-    return memo
-  }, {})
-
-  return Object.assign(
-    {},
-    {
-      event_callback: function() {return;}
-    },
-    matchedParams,
-    eventParams
-  )
-}
-
-LAGoogleAnalytics.prototype.generatePageLoadParams = function generatePageLoadParams(evParams) {
-  const kit = this.client.kit
-
-  if (evParams.hasOwnProperty('path') && validationkit.isNotEmpty(evParams.path)) {
-    const params = {
-      page_path: evParams.path,
-      page_title: evParams.title
+    else if (activity.name == 'SHARE') {
+      localParams.event_category = activity.params.channel
+      localParams.event_label = objectkit.getProp(activity.params, 'url', location.href)
     }
-    if (validationkit.isNotEmpty(evParams.url)) params.page_location = evParams.url
+    else if (activity.name == 'SEARCH') {
+      localParams.event_category = 'engagement'
+      localParams.event_label = activity.params.query
+    }
+    else if (activity.name == 'SIGNIN' || activity.name == 'SIGNUP') {
+      localParams.event_category = 'engagement'
+      localParams.event_label = activity.params.method
+    }
+    else {
+      localParams.event_category = 'engagement'
+      localParams.event_label = activity.params.value || ''
+    }
 
-    return params
+    window.gtag('event', localName, localParams)
   }
 
-  return undefined
-}
+  function disable() {
+    window['ga-disable-' + config.property] = true
+  }
 
-export default LAGoogleAnalytics
+  function enable() {
+    window['ga-disable-' + config.property] = false
+  }
+
+  return {
+    name: config.name,
+    init: init,
+    send: send,
+    disable: disable,
+    enable: enable
+  }
+}
