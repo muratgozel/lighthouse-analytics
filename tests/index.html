@@ -15,6 +15,8 @@
       const ga = LighthouseAnalytics.GoogleAnalytics({
         property: 'UA-25596388-1'
       })
+      analytics.newActivity('SOMETHING_EARLY', {value: 1})
+
       analytics.newService(ga).then(function() {
         analytics.newActivity('SCREEN', {title: 'Lorem Ipsum'})
         analytics.newActivity('SCREEN', {title: 'Another Lorem'})

@@ -7,6 +7,10 @@ export default function GoogleAnalytics(_opts={}) {
   }
 
   const scripter = Scripter.create()
+  const state = {
+    status: 'NOT_INITIATED',
+    queue: []
+  }
   const config = {
     name: 'Google Analytics',
     property: _opts.property,
@@ -23,6 +27,8 @@ export default function GoogleAnalytics(_opts={}) {
   }
 
   function init() {
+    state.status = 'INITIATING'
+
     window.dataLayer = window.dataLayer || [];
     window.gtag = function gtag() {
       dataLayer.push(arguments)
@@ -35,13 +41,49 @@ export default function GoogleAnalytics(_opts={}) {
 
     const src = 'https://www.googletagmanager.com/gtag/js?id=' + config.property
 
-    return scripter.injectjs(src, {
-      id: 'lighthouse-service-google-analytics',
-      location: 'headEnd'
+    return new Promise(function(resolve, reject) {
+      scripter
+        .injectjs(src, {
+          id: 'lighthouse-service-google-analytics',
+          location: 'headEnd'
+        })
+        .then(function() {
+          state.status = 'READY'
+
+          flushQueue()
+
+          return resolve()
+        })
+        .catch(function(err) {
+          state.status = 'FAILED'
+          return reject(err)
+        })
     })
   }
 
+  function addToQueue(activity, session) {
+    return state.queue.push({activity: activity, session: session})
+  }
+
+  function flushQueue() {
+    if (state.queue.length > 0) {
+      send(state.queue[0].activity, state.queue[0].session)
+      state.queue.shift()
+      if (state.queue.length > 0) {
+        flushQueue()
+      }
+    }
+  }
+
   function send(activity, session) {
+    if (state.status == 'NOT_INITIATED' || state.status == 'INITIATING') {
+      return addToQueue(activity, session)
+    }
+
+    if (state.status != 'READY') {
+      return
+    }
+
     const localName = objectkit.getProp(config.localEventNames, activity.name, activity.name)
     const localParams = {}
 
@@ -77,7 +119,7 @@ export default function GoogleAnalytics(_opts={}) {
       localParams.event_label = activity.params.value || ''
     }
 
-    window.gtag('event', localName, localParams)
+    return window.gtag('event', localName, localParams)
   }
 
   function disable() {
